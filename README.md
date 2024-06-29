@@ -1,6 +1,6 @@
 # Nestjs-boilerplate
 
-nestjs, prisma, docker
+prisma, swagger
 
 ## Environment
 
@@ -9,12 +9,14 @@ nestjs, prisma, docker
 -   docker
 
 ## Port
-- server: 3000
-- mysql: 3306
+
+-   server: 3000
+-   mysql: 3306
 
 ## Api docs
-- open [api docs](http://localhost:3000/api/docs)
-- **id**: _root_ / **password**: _admin_
+
+-   open [api docs](http://localhost:3000/api/docs)
+-   **id**: _root_ / **password**: _admin_
 
 ### how to run in docker
 
