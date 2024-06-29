@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  idx          Int         @id @default(autoincrement())
+  email        String      @db.VarChar(255)
+  pwd          String      @db.VarChar(255)
+  name         String      @db.VarChar(255)
+  createdAt    DateTime    @default(now()) @map("created_at")
+  deletedAt    DateTime?   @map("deleted_at")
+  pwdUpdatedAt DateTime?   @map("pwd_updated_at")
+  userToken    UserToken[]
+
+  @@map("user")
+}
+
+model UserToken {
+  idx       Int       @id @default(autoincrement())
+  userIdx   Int       @map("user_idx")
+  value     String    @db.VarChar(255)
+  createdAt DateTime? @default(now()) @map("created_at")
+  deletedAt DateTime? @map("deleted_at")
+  user      User      @relation(fields: [userIdx], references: [idx], onDelete: Cascade, map: "fk_userToken.user_idx-user.idx")
+
+  @@index([userIdx], map: "fk_userToken.user_id-user.id_idx")
+  @@map("user_token")
+}
