@@ -6,7 +6,6 @@ prisma, swagger
 
 -   node `v20.6.0`
 -   mysql `8.0.36`
--   docker
 
 ## Port
 
@@ -18,11 +17,6 @@ prisma, swagger
 -   open [api docs](http://localhost:3000/api/docs)
 -   **id**: _root_ / **password**: _admin_
 
-### how to run in docker
-
-1. run docker container engine
-2. npm run start:docker
-
 ### how to run for developing in local
 
 1. npm install -g @nestjs/cli
@@ -31,6 +25,7 @@ prisma, swagger
     > Create prisma client model using schema.prisma  
     > If change model in schema.prisma, run this cmd
 4. npx prisma db push
+    > Notice! you have to run mysql in local
     > Caution! this cmd change db schema using schema.prisma
 5. npm run start:dev
 
