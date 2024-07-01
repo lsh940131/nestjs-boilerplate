@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UtilService } from '../../util/util.service';
-import { IAuth, IAuthSignOk } from '../../interface/auth.interface';
+import { IAuth } from '../../interface/auth.interface';
 import { ErrorDto } from '../../dto/common.dto';
 import { CreateJwtDto, SignUpDto, SignInDto } from '../../dto/auth.dto';
 
@@ -80,17 +80,15 @@ export class AuthService {
 	async signUp(data: SignUpDto): Promise<Boolean> {
 		const { email, pwd, name } = data;
 
-		await this.prismaService.$transaction(async () => {
-			const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
-			if (isDupEmail) {
-				throw new ErrorDto(4, 'Already use the email');
-			}
+		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
+		if (isDupEmail) {
+			throw new ErrorDto(4, 'Already use the email');
+		}
 
-			const hashPwd = this.utilService.createHash(pwd);
+		const hashPwd = this.utilService.createHash(pwd);
 
-			// 사용자 생성
-			await this.prismaService.user.create({ data: { email, pwd: hashPwd, name } });
-		});
+		// 사용자 생성
+		await this.prismaService.user.create({ data: { email, pwd: hashPwd, name } });
 
 		return true;
 	}
@@ -100,7 +98,7 @@ export class AuthService {
 	 * - 이메일 & 패스워드 확인
 	 * - jwt 생성 & 저장
 	 */
-	async signIn(data: SignInDto): Promise<IAuthSignOk> {
+	async signIn(data: SignInDto): Promise<String> {
 		const { email, pwd } = data;
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
@@ -113,17 +111,13 @@ export class AuthService {
 			throw new ErrorDto(6, 'Incorrect email or pwd');
 		}
 
-		const result: IAuthSignOk = await this.prismaService.$transaction(async () => {
-			// jwt 생성
-			const token = await this.createJwt({ idx: userInfo.idx });
+		// jwt 생성
+		const token = await this.createJwt({ idx: userInfo.idx });
 
-			// jwt 저장
-			await this.prismaService.userToken.create({ data: { userIdx: userInfo.idx, value: token } });
+		// jwt 저장
+		await this.prismaService.userToken.create({ data: { userIdx: userInfo.idx, value: token } });
 
-			return { token };
-		});
-
-		return result;
+		return token;
 	}
 
 	/**
@@ -141,7 +135,11 @@ export class AuthService {
 	 * - 삭제처리
 	 */
 	async resign(idx: number) {
-		await this.prismaService.user.update({ where: { idx }, data: { deletedAt: new Date() } });
+		await this.prismaService.$transaction(async (tx) => {
+			await tx.userToken.updateMany({ where: { userIdx: idx, deletedAt: null }, data: { deletedAt: new Date() } });
+
+			await tx.user.update({ where: { idx }, data: { deletedAt: new Date() } });
+		});
 
 		return true;
 	}
