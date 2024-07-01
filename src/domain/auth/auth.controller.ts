@@ -36,7 +36,9 @@ export class AuthController {
 		},
 	])
 	async signIn(@Body() data: SignInDto) {
-		return await this.authService.signIn(data);
+		const result = await this.authService.signIn(data);
+
+		return { token: result };
 	}
 
 	@ApiBearerAuth('access-token')
