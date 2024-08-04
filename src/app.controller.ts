@@ -1,18 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ResponseDto } from './dto/common.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
 	constructor(private readonly appService: AppService) {}
 
-	@Get()
+	@Get('/')
+	@ApiOperation({ summary: 'heartbeat 체크' })
 	heartbeat() {
 		return this.appService.heartbeat();
-	}
-
-	@Get('response/form')
-	response() {
-		return true;
 	}
 }
