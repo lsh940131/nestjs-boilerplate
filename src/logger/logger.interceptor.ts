@@ -17,10 +17,19 @@ export class LoggerInterceptor implements NestInterceptor {
 				try {
 					const userIdx = request.user ? request.user.userIdx : null;
 					const { url, method, headers, body, query } = request;
-					const ip = headers['x-forwarded-for'] || request.ip || '';
+					let ip = headers['x-forwarded-for'] || request.ip || '';
+
+					// IPv4-매핑된 IPv6 주소 형식에서 IPv4 주소만 추출
+					if (ip && ip.startsWith('::ffff:')) {
+						ip = ip.replace('::ffff:', '');
+					}
+
 					const { statusCode } = response;
+
 					await this.logger.create(userIdx, ip, url, method, headers, body, query, responseData, null, statusCode);
-				} catch (err) {}
+				} catch (err) {
+					throw err;
+				}
 			}),
 		);
 	}
