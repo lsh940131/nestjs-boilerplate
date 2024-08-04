@@ -1,6 +1,6 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import * as crypto from "crypto";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class UtilService {
@@ -9,9 +9,9 @@ export class UtilService {
 	private saltJar: string;
 
 	constructor(private configService: ConfigService) {
-		this.key = this.configService.get<string>("AESKEY");
+		this.key = this.configService.get<string>('AESKEY');
 		this.iv = Buffer.alloc(16, 0);
-		this.saltJar = this.configService.get<string>("SALTJAR");
+		this.saltJar = this.configService.get<string>('SALTJAR');
 	}
 
 	/**
@@ -20,9 +20,9 @@ export class UtilService {
 	 * @returns 암호 문자열
 	 */
 	aes256Encrypt(txt: string | number) {
-		const cipher = crypto.createCipheriv("aes-256-cbc", this.key, this.iv);
-		let encryptedText = cipher.update(txt.toString(), "utf8", "base64");
-		encryptedText += cipher.final("base64");
+		const cipher = crypto.createCipheriv('aes-256-cbc', this.key, this.iv);
+		let encryptedText = cipher.update(txt.toString(), 'utf8', 'base64');
+		encryptedText += cipher.final('base64');
 
 		return encryptedText;
 	}
@@ -33,9 +33,9 @@ export class UtilService {
 	 * @returns 복호화된 문자열
 	 */
 	aes256Decrypt(txt: string) {
-		const decipher = crypto.createDecipheriv("aes-256-cbc", this.key, this.iv);
-		let decryptedText = decipher.update(txt, "base64", "utf8");
-		decryptedText += decipher.final("utf8");
+		const decipher = crypto.createDecipheriv('aes-256-cbc', this.key, this.iv);
+		let decryptedText = decipher.update(txt, 'base64', 'utf8');
+		decryptedText += decipher.final('utf8');
 
 		return decryptedText;
 	}
@@ -46,12 +46,12 @@ export class UtilService {
 	 * @returns 암호된 문자 hex
 	 */
 	createHash(originText: string): string {
-		if (typeof originText !== "string" || originText.length < 1) {
+		if (typeof originText !== 'string' || originText.length < 1) {
 			throw new Error(`To dev) 의도되지 않은 값이 들어왔습니다. value: ${originText}, length: ${originText.length}, type: ${typeof originText}`);
 		}
 
-		const salt = crypto.randomBytes(64).toString("base64");
-		const encrypt = crypto.createHash("sha512").update(`${originText}${salt}`).digest("base64");
+		const salt = crypto.randomBytes(64).toString('base64');
+		const encrypt = crypto.createHash('sha512').update(`${originText}${salt}`).digest('base64');
 		const hashPwd = `${encrypt}${this.saltJar}${salt}`;
 
 		return hashPwd;
@@ -69,7 +69,7 @@ export class UtilService {
 		const hashSplit = hashText.split(this.saltJar);
 		if (hashSplit.length === 2) {
 			const salt = hashSplit[1];
-			const encrypt = crypto.createHash("sha512").update(`${originText}${salt}`).digest("base64");
+			const encrypt = crypto.createHash('sha512').update(`${originText}${salt}`).digest('base64');
 			const hashPwd = `${encrypt}${this.saltJar}${salt}`;
 			result = hashPwd === hashText;
 		}
