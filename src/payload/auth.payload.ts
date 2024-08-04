@@ -53,5 +53,5 @@ export class AuthSignupEmailDupPayload extends ErrorPayload {
 
 	@ApiProperty({ description: '에러 코드', default: ErrorCodeEnum.SIGNUP_DUP_EMAIL })
 	@IsEnum(ErrorCodeEnum)
-	code: ErrorCodeEnum;
+	code: string;
 }
