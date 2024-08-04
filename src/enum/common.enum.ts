@@ -1,4 +1,3 @@
 export enum ErrorCodeEnum {
-	SIGNIN_DUP = 'EA001',
-	SIGNIN_CONTINUOUS_FAILURE = 'EA002',
+	SIGNUP_DUP_EMAIL = 'AUTH001',
 }

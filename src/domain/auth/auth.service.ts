@@ -5,6 +5,8 @@ import { UtilService } from '../../util/util.service';
 import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
 import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
 import { CustomHttpException } from '../../payload/common.payload';
+import { AuthGetPayload, AuthSigninPayload } from 'src/payload/auth.payload';
+import { ErrorCodeEnum } from '../../enum/common.enum';
 
 @Injectable()
 export class AuthService {
@@ -77,12 +79,12 @@ export class AuthService {
 	 * - 이메일 중복 체크
 	 * - 비밀번호 단방향 암호화
 	 */
-	async signUp(data: SignUpDto): Promise<Boolean> {
+	async signUp(data: SignUpDto): Promise<boolean> {
 		const { email, pwd, name } = data;
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new CustomHttpException(412, 'Already use the email');
+			throw new CustomHttpException(412, 'Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -98,7 +100,7 @@ export class AuthService {
 	 * - 이메일 & 패스워드 확인
 	 * - jwt 생성 & 저장
 	 */
-	async signIn(data: SignInDto): Promise<String> {
+	async signIn(data: SignInDto): Promise<AuthSigninPayload> {
 		const { email, pwd } = data;
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
@@ -117,7 +119,12 @@ export class AuthService {
 		// jwt 저장
 		await this.prismaService.userToken.create({ data: { userIdx: userInfo.idx, value: token } });
 
-		return token;
+		const result = new AuthSigninPayload({
+			token,
+			pwdUpdatedAt: userInfo.pwdUpdatedAt,
+		});
+
+		return result;
 	}
 
 	/**
@@ -134,7 +141,7 @@ export class AuthService {
 	 * 회원탈퇴
 	 * - 삭제처리
 	 */
-	async resign(idx: number) {
+	async resign(idx: number): Promise<boolean> {
 		await this.prismaService.$transaction(async (tx) => {
 			await tx.userToken.updateMany({ where: { userIdx: idx, deletedAt: null }, data: { deletedAt: new Date() } });
 
@@ -147,19 +154,21 @@ export class AuthService {
 	/**
 	 * 사용자 정보 조회
 	 */
-	async get(idx: number) {
-		const userInfo = await this.prismaService.user.findUnique({
+	async get(idx: number): Promise<AuthGetPayload> {
+		const user = await this.prismaService.user.findUnique({
 			select: { email: true, name: true, createdAt: true, pwdUpdatedAt: true },
 			where: { idx, deletedAt: null },
 		});
 
-		return userInfo;
+		const result = new AuthGetPayload(user);
+
+		return result;
 	}
 
 	/**
 	 * 사용자 정보 수정
 	 */
-	async update(idx: number, data: AuthUpdateDto): Promise<Boolean> {
+	async update(idx: number, data: AuthUpdateDto): Promise<boolean> {
 		const { pwd, name } = data;
 
 		const updateParam: IAuthUpdate = { name };
