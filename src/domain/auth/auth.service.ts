@@ -84,7 +84,7 @@ export class AuthService {
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new CustomHttpException(412, 'Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
+			throw new CustomHttpException(409, 'Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -105,12 +105,12 @@ export class AuthService {
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (!userInfo) {
-			throw new CustomHttpException(412, 'Incorrect email or password');
+			throw new CustomHttpException(401, 'Incorrect email or password');
 		}
 
 		const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 		if (!isValid) {
-			throw new CustomHttpException(412, 'Incorrect email or password');
+			throw new CustomHttpException(401, 'Incorrect email or password');
 		}
 
 		// jwt 생성

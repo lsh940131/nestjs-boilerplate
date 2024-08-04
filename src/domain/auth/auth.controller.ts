@@ -15,7 +15,7 @@ export class AuthController {
 	@Post('/signup')
 	@ApiOperation({ summary: '회원가입' })
 	@ApiResponse({
-		status: 401,
+		status: 409,
 		description: '이메일 중복',
 		type: AuthSignupEmailDupPayload,
 	})
@@ -26,7 +26,7 @@ export class AuthController {
 	@Post('/signin')
 	@ApiOperation({ summary: '로그인' })
 	@ApiResponse({
-		status: 412,
+		status: 401,
 		description: '이메일 또는 패스워드 틀림',
 		type: AuthSigninFailPayload,
 	})
