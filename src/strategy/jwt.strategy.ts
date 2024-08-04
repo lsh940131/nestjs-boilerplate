@@ -5,9 +5,10 @@ import { AuthService } from '../domain/auth/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { ErrorDto } from '../dto/common.dto';
 import { IAuth } from '../interface/auth.interface';
+import { CustomHttpException } from '../payload/common.payload';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 	constructor(
 		private configService: ConfigService,
 		private authService: AuthService,
@@ -24,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		const jwt = req.headers['authorization'];
 		const auth: IAuth = await this.authService.validateJwt(payload.sub, jwt);
 		if (!auth) {
-			throw new ErrorDto(7, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		return auth;

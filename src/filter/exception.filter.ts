@@ -1,30 +1,54 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
-import { Request, Response } from 'express';
-import { ResponseDto, ErrorDto } from '../dto/common.dto';
+import { ExceptionFilter, Catch, ArgumentsHost, BadRequestException, HttpException } from '@nestjs/common';
+import { Response } from 'express';
+import { ResponsePayload, ErrorPayload, CustomHttpException } from '../payload/common.payload';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
-	catch(exception: Error, host: ArgumentsHost) {
-		const ctx = host.switchToHttp();
-		const response = ctx.getResponse<Response>();
-		const request = ctx.getRequest<Request>();
+	constructor(private readonly loggerService: LoggerService) {}
 
-		let res: ResponseDto;
-		if (exception instanceof ResponseDto) {
+	async catch(exception: Error, host: ArgumentsHost) {
+		const ctx = host.switchToHttp();
+		const request = ctx.getRequest();
+		const response = ctx.getResponse<Response>();
+
+		let statusCode: number = 200;
+		let res: ResponsePayload;
+		if (exception instanceof ResponsePayload) {
 			res = exception;
-		} else if (exception instanceof ErrorDto) {
-			res = new ResponseDto(null, { code: exception.code, message: exception.message });
+		} else if (exception instanceof ErrorPayload) {
+			res = new ResponsePayload(null, exception);
+		} else if (exception instanceof BadRequestException) {
+			statusCode = 400;
+			const validationErrorMsg = this.extractValidationErrorMsg(exception.getResponse());
+			res = new ResponsePayload(400, new ErrorPayload(validationErrorMsg));
 		} else if (exception instanceof HttpException) {
-			res = new ResponseDto(null, { code: exception.getStatus(), message: exception.message });
+			statusCode = exception.getStatus();
+			res = new ResponsePayload(null, new ErrorPayload(exception.message));
+		} else if (exception instanceof CustomHttpException) {
+			statusCode = exception.statusCode;
+			res = new ResponsePayload(null, new ErrorPayload(exception.message, exception.code));
 		} else {
 			console.log(exception);
-			// for logging
-			// timestamp: new Date().toISOString(),
-			// path: request.url,
-
-			res = new ResponseDto(null, { code: 500, message: 'Internal Server Error' });
+			statusCode = 500;
+			res = new ResponsePayload(null, new ErrorPayload('Internal Server Error'));
 		}
 
-		response.status(200).json(res);
+		const userIdx = request.user ? request.user.userIdx : null;
+		const { url, method, headers, body, query } = request;
+		const ip = headers['x-forwarded-for'] || request.ip || '';
+		const errorResponse = exception instanceof HttpException ? exception.getResponse() : exception;
+
+		await this.loggerService.create(userIdx, ip, url, method, headers, body, query, null, errorResponse, statusCode);
+
+		response.status(statusCode).json(res);
+	}
+
+	private extractValidationErrorMsg(response: any): string {
+		const validationResponse = response as { message: any; error: string; statusCode: number };
+		if (Array.isArray(validationResponse.message)) {
+			return validationResponse.message.join(', ');
+		}
+		return validationResponse.message;
 	}
 }

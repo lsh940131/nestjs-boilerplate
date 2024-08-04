@@ -3,16 +3,19 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './domain/auth/auth.module';
-import { UserModule } from './domain/user/user.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { AllExceptionFilter } from './filter/exception.filter';
 import { ResponseInterceptor } from './interceptor/response.interceptor';
+import { ConfigModule } from '@nestjs/config';
+import { LoggerService } from './logger/logger.service';
+import { LoggerInterceptor } from './logger/logger.interceptor';
 
 @Module({
-	imports: [PrismaModule, AuthModule, UserModule],
+	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
+		LoggerService,
 		{
 			provide: APP_FILTER,
 			useClass: AllExceptionFilter,
@@ -20,6 +23,10 @@ import { ResponseInterceptor } from './interceptor/response.interceptor';
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: ResponseInterceptor,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: LoggerInterceptor,
 		},
 	],
 })

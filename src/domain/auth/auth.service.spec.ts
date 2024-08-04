@@ -1,12 +1,12 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { PrismaService } from "../../prisma/prisma.service";
-import { AuthService } from "./auth.service";
-import { UtilService } from "../../util/util.service";
-import { CreateJwtDto } from "../../dto/auth.dto";
-import { IAuth } from "../../interface/auth.interface";
-import { ErrorDto } from "../../dto/common.dto";
+import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../prisma/prisma.service';
+import { AuthService } from './auth.service';
+import { UtilService } from '../../util/util.service';
+import { CreateJwtDto } from '../../dto/auth.dto';
+import { IAuth } from '../../interface/auth.interface';
+import { ErrorDto } from '../../dto/common.dto';
 
 // Mock PrismaServiceencrypted
 const prismaDefaultFunc = {
@@ -28,18 +28,18 @@ const mockPrismaService = {
 
 // Mock JwtService
 const mockJwtService = {
-	signAsync: jest.fn(() => "JWT_ENCRYPTED_STRING"),
+	signAsync: jest.fn(() => 'JWT_ENCRYPTED_STRING'),
 };
 
 // Mock UtilService
 const mockUtilService = {
-	aes256Encrypt: jest.fn(() => "AES256_ENCRYPTED_STRING"),
+	aes256Encrypt: jest.fn(() => 'AES256_ENCRYPTED_STRING'),
 	aes256Decrypt: jest.fn(),
-	createHash: jest.fn(() => "HASH_STRING"),
+	createHash: jest.fn(() => 'HASH_STRING'),
 	validateHash: jest.fn(() => true),
 };
 
-describe("AuthService", () => {
+describe('AuthService', () => {
 	let prismaService: PrismaService;
 	let authService: AuthService;
 	let utilService: UtilService;
@@ -60,50 +60,50 @@ describe("AuthService", () => {
 		utilService = module.get<UtilService>(UtilService);
 	});
 
-	describe("createJwt()", () => {
-		it("success", async () => {
+	describe('createJwt()', () => {
+		it('success', async () => {
 			const input: CreateJwtDto = {
-				id: 1,
+				idx: 1,
 			};
-			const expectedResult = "JWT_ENCRYPTED_STRING";
+			const expectedResult = 'JWT_ENCRYPTED_STRING';
 
 			const result = await authService.createJwt(input);
 			expect(result).toEqual(expectedResult);
 		});
 	});
 
-	describe("validateJwt()", () => {
-		it("success", async () => {
+	describe('validateJwt()', () => {
+		it('success', async () => {
 			const input = {
-				sub: "AES256_ENCRYPTED_STRING",
-				jwt: "JWT_ENCRYPTED_STRING",
+				sub: 'AES256_ENCRYPTED_STRING',
+				jwt: 'JWT_ENCRYPTED_STRING',
 			};
 			const auth: IAuth = {
-				id: 1,
-				jwt: "JWT_ENCRYPTED_STRING",
+				idx: 1,
+				jwt: 'JWT_ENCRYPTED_STRING',
 			};
 
-			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ id: 1 }));
+			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ idx: 1 }));
 
 			mockPrismaService.userToken.findFirst.mockResolvedValueOnce({
-				id: 1,
-				userId: 1,
+				idx: 1,
+				userIdx: 1,
 			});
 
 			mockPrismaService.user.findUnique.mockResolvedValueOnce({
-				id: 1,
+				idx: 1,
 			});
 
 			const result = await authService.validateJwt(input.sub, input.jwt);
 			expect(result).toEqual({
-				id: 1,
-				jwt: "JWT_ENCRYPTED_STRING",
+				idx: 1,
+				jwt: 'JWT_ENCRYPTED_STRING',
 			});
 
 			expect(prismaService.userToken.findFirst).toHaveBeenCalledWith({
 				select: {
-					id: true,
-					userId: true,
+					idx: true,
+					userIdx: true,
 				},
 				where: {
 					value: input.jwt,
@@ -112,29 +112,29 @@ describe("AuthService", () => {
 			});
 
 			expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-				select: { id: true },
-				where: { id: auth.id, deletedAt: null },
+				select: { idx: true },
+				where: { idx: auth.idx, deletedAt: null },
 			});
 		});
 
-		it("fail - aes256 decrypt fail", async () => {
+		it('fail - aes256 decrypt fail', async () => {
 			const input = {
-				sub: "WRONG_SUB",
-				jwt: "WRONG_JWT",
+				sub: 'WRONG_SUB',
+				jwt: 'WRONG_JWT',
 			};
 
-			mockUtilService.aes256Decrypt.mockReturnValueOnce("AES256_DECRYPT_FAIL");
+			mockUtilService.aes256Decrypt.mockReturnValueOnce('AES256_DECRYPT_FAIL');
 
 			await authService.validateJwt(input.sub, input.jwt).catch((e) => typeof e === typeof ErrorDto);
 		});
 
-		it("fail - tokenInfo not found | tokenInfo mismatch jwtInfo", async () => {
+		it('fail - tokenInfo not found | tokenInfo mismatch jwtInfo', async () => {
 			const input = {
-				sub: "AES256_ENCRYPTED_STRING",
-				jwt: "JWT_ENCRYPTED_STRING",
+				sub: 'AES256_ENCRYPTED_STRING',
+				jwt: 'JWT_ENCRYPTED_STRING',
 			};
 
-			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ id: 1 }));
+			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ idx: 1 }));
 
 			mockPrismaService.userToken.findFirst.mockResolvedValueOnce(undefined);
 
@@ -142,8 +142,8 @@ describe("AuthService", () => {
 
 			expect(prismaService.userToken.findFirst).toHaveBeenCalledWith({
 				select: {
-					id: true,
-					userId: true,
+					idx: true,
+					userIdx: true,
 				},
 				where: {
 					value: input.jwt,
@@ -152,21 +152,21 @@ describe("AuthService", () => {
 			});
 		});
 
-		it("fail - userInfo not found", async () => {
+		it('fail - userInfo not found', async () => {
 			const input = {
-				sub: "AES256_ENCRYPTED_STRING",
-				jwt: "JWT_ENCRYPTED_STRING",
+				sub: 'AES256_ENCRYPTED_STRING',
+				jwt: 'JWT_ENCRYPTED_STRING',
 			};
 			const auth: IAuth = {
-				id: 1,
-				jwt: "JWT_ENCRYPTED_STRING",
+				idx: 1,
+				jwt: 'JWT_ENCRYPTED_STRING',
 			};
 
-			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ id: 1 }));
+			mockUtilService.aes256Decrypt.mockReturnValueOnce(JSON.stringify({ idx: 1 }));
 
 			mockPrismaService.userToken.findFirst.mockResolvedValueOnce({
-				id: 1,
-				userId: 1,
+				idx: 1,
+				userIdx: 1,
 			});
 
 			mockPrismaService.user.findUnique.mockResolvedValueOnce(undefined);
@@ -175,8 +175,8 @@ describe("AuthService", () => {
 
 			expect(prismaService.userToken.findFirst).toHaveBeenCalledWith({
 				select: {
-					id: true,
-					userId: true,
+					idx: true,
+					userIdx: true,
 				},
 				where: {
 					value: input.jwt,
@@ -185,8 +185,8 @@ describe("AuthService", () => {
 			});
 
 			expect(prismaService.user.findUnique).toHaveBeenCalledWith({
-				select: { id: true },
-				where: { id: auth.id, deletedAt: null },
+				select: { idx: true },
+				where: { idx: auth.idx, deletedAt: null },
 			});
 		});
 	});

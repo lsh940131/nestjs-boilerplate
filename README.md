@@ -4,7 +4,7 @@ prisma, swagger
 
 ## Environment
 
--   node `v20.6.0`
+-   node `v20.16.0`
 -   mysql `8.0.36`
 
 ## Port
@@ -14,7 +14,7 @@ prisma, swagger
 
 ## Api docs
 
--   open [api docs](http://localhost:3000/api/docs)
+-   [link](http://localhost:3000/api/docs)
 -   **id**: _root_ / **password**: _admin_
 
 ### how to run for developing in local

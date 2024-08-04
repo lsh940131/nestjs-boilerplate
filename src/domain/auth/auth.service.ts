@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UtilService } from '../../util/util.service';
-import { IAuth } from '../../interface/auth.interface';
-import { ErrorDto } from '../../dto/common.dto';
-import { CreateJwtDto, SignUpDto, SignInDto } from '../../dto/auth.dto';
+import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
+import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
+import { CustomHttpException } from '../../payload/common.payload';
+import { AuthGetPayload, AuthSigninPayload } from 'src/payload/auth.payload';
+import { ErrorCodeEnum } from '../../enum/common.enum';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +46,7 @@ export class AuthService {
 			const decryptInfo = this.utilService.aes256Decrypt(sub);
 			auth = JSON.parse(decryptInfo) as IAuth;
 		} catch (e) {
-			throw new ErrorDto(1, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		// check the token is saved in db
@@ -61,12 +63,12 @@ export class AuthService {
 			},
 		});
 		if (!tokenInfo || tokenInfo.userIdx != auth.idx) {
-			throw new ErrorDto(2, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		const userInfo = await this.prismaService.user.findUnique({ select: { idx: true }, where: { idx: auth.idx, deletedAt: null } });
 		if (!userInfo) {
-			throw new ErrorDto(3, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		return auth;
@@ -77,12 +79,12 @@ export class AuthService {
 	 * - 이메일 중복 체크
 	 * - 비밀번호 단방향 암호화
 	 */
-	async signUp(data: SignUpDto): Promise<Boolean> {
+	async signUp(data: SignUpDto): Promise<boolean> {
 		const { email, pwd, name } = data;
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new ErrorDto(4, 'Already use the email');
+			throw new CustomHttpException(412, 'Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -98,17 +100,17 @@ export class AuthService {
 	 * - 이메일 & 패스워드 확인
 	 * - jwt 생성 & 저장
 	 */
-	async signIn(data: SignInDto): Promise<String> {
+	async signIn(data: SignInDto): Promise<AuthSigninPayload> {
 		const { email, pwd } = data;
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (!userInfo) {
-			throw new ErrorDto(5, 'Incorrect email or pwd');
+			throw new CustomHttpException(412, 'Incorrect email or password');
 		}
 
 		const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 		if (!isValid) {
-			throw new ErrorDto(6, 'Incorrect email or pwd');
+			throw new CustomHttpException(412, 'Incorrect email or password');
 		}
 
 		// jwt 생성
@@ -117,7 +119,12 @@ export class AuthService {
 		// jwt 저장
 		await this.prismaService.userToken.create({ data: { userIdx: userInfo.idx, value: token } });
 
-		return token;
+		const result = new AuthSigninPayload({
+			token,
+			pwdUpdatedAt: userInfo.pwdUpdatedAt,
+		});
+
+		return result;
 	}
 
 	/**
@@ -134,12 +141,51 @@ export class AuthService {
 	 * 회원탈퇴
 	 * - 삭제처리
 	 */
-	async resign(idx: number) {
+	async resign(idx: number): Promise<boolean> {
 		await this.prismaService.$transaction(async (tx) => {
 			await tx.userToken.updateMany({ where: { userIdx: idx, deletedAt: null }, data: { deletedAt: new Date() } });
 
 			await tx.user.update({ where: { idx }, data: { deletedAt: new Date() } });
 		});
+
+		return true;
+	}
+
+	/**
+	 * 사용자 정보 조회
+	 */
+	async get(idx: number): Promise<AuthGetPayload> {
+		const user = await this.prismaService.user.findUnique({
+			select: { email: true, name: true, createdAt: true, pwdUpdatedAt: true },
+			where: { idx, deletedAt: null },
+		});
+
+		const result = new AuthGetPayload(user);
+
+		return result;
+	}
+
+	/**
+	 * 사용자 정보 수정
+	 */
+	async update(idx: number, data: AuthUpdateDto): Promise<boolean> {
+		const { pwd, name } = data;
+
+		const updateParam: IAuthUpdate = { name };
+		if (pwd) {
+			const hashPwd = this.utilService.createHash(pwd);
+			updateParam.pwd = hashPwd;
+		}
+
+		for (const key in updateParam) {
+			if (updateParam[key] == null) {
+				delete updateParam[key];
+			}
+		}
+
+		if (Object.keys(updateParam).length) {
+			await this.prismaService.user.update({ where: { idx }, data: updateParam });
+		}
 
 		return true;
 	}
