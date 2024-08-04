@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UtilService } from '../../util/util.service';
-import { IAuth } from '../../interface/auth.interface';
-import { CreateJwtDto, SignUpDto, SignInDto } from '../../dto/auth.dto';
+import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
+import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
 import { CustomHttpException, ErrorPayload } from '../../payload/common.payload';
 
 @Injectable()
@@ -140,6 +140,43 @@ export class AuthService {
 
 			await tx.user.update({ where: { idx }, data: { deletedAt: new Date() } });
 		});
+
+		return true;
+	}
+
+	/**
+	 * 사용자 정보 조회
+	 */
+	async get(idx: number) {
+		const userInfo = await this.prismaService.user.findUnique({
+			select: { email: true, name: true, createdAt: true, pwdUpdatedAt: true },
+			where: { idx, deletedAt: null },
+		});
+
+		return userInfo;
+	}
+
+	/**
+	 * 사용자 정보 수정
+	 */
+	async update(idx: number, data: AuthUpdateDto): Promise<Boolean> {
+		const { pwd, name } = data;
+
+		const updateParam: IAuthUpdate = { name };
+		if (pwd) {
+			const hashPwd = this.utilService.createHash(pwd);
+			updateParam.pwd = hashPwd;
+		}
+
+		for (const key in updateParam) {
+			if (updateParam[key] == null) {
+				delete updateParam[key];
+			}
+		}
+
+		if (Object.keys(updateParam).length) {
+			await this.prismaService.user.update({ where: { idx }, data: updateParam });
+		}
 
 		return true;
 	}

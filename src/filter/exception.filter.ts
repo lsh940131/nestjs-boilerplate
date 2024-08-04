@@ -29,6 +29,7 @@ export class AllExceptionFilter implements ExceptionFilter {
 			statusCode = exception.statusCode;
 			res = new ResponsePayload(null, new ErrorPayload(exception.message, exception.code));
 		} else {
+			console.log(exception);
 			statusCode = 500;
 			res = new ResponsePayload(null, new ErrorPayload('Internal Server Error'));
 		}

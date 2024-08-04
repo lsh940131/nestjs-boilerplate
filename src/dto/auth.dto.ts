@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEmail, IsString } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
+import { IsNotEmpty, IsEmail, IsString, IsOptional } from 'class-validator';
 
 export class CreateJwtDto {
 	@ApiProperty({ required: true, default: 1 })
@@ -36,4 +35,16 @@ export class SignInDto {
 	@IsNotEmpty()
 	@IsString()
 	pwd: string;
+}
+
+export class AuthUpdateDto {
+	@ApiProperty({ required: false, maxLength: 100 })
+	@IsString()
+	@IsOptional()
+	readonly pwd?: string;
+
+	@ApiProperty({ required: false, maxLength: 100 })
+	@IsString()
+	@IsOptional()
+	readonly name?: string;
 }
