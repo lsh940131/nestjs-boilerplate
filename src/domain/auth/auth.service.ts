@@ -4,7 +4,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { UtilService } from '../../util/util.service';
 import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
 import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
-import { CustomHttpException, ErrorPayload } from '../../payload/common.payload';
+import { CustomHttpException } from '../../payload/common.payload';
 
 @Injectable()
 export class AuthService {
@@ -82,7 +82,7 @@ export class AuthService {
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new ErrorPayload('Already use the email');
+			throw new CustomHttpException(412, 'Already use the email');
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -103,12 +103,12 @@ export class AuthService {
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (!userInfo) {
-			throw new ErrorPayload('Incorrect email or pwd');
+			throw new CustomHttpException(412, 'Incorrect email or password');
 		}
 
 		const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 		if (!isValid) {
-			throw new ErrorPayload('Incorrect email or pwd');
+			throw new CustomHttpException(412, 'Incorrect email or password');
 		}
 
 		// jwt 생성
