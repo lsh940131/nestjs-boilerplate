@@ -31,3 +31,20 @@ model UserToken {
   @@index([userIdx], map: "fk_userToken.user_id-user.id_idx")
   @@map("user_token")
 }
+
+model ApiLog {
+  idx          Int      @id @default(autoincrement())
+  userIdx      Int?     @map("user_idx")
+  ip           String   @db.VarChar(50)
+  url          String   @db.VarChar(150)
+  method       String   @db.VarChar(6)
+  headers      String   @db.Text
+  bodys        String?  @db.Text
+  query        String?  @db.Text
+  responseData String?  @map("response_data") @db.Text
+  error        String?  @db.Text
+  status       Int
+  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(0)
+
+  @@map("api_log")
+}
