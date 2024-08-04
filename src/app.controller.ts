@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation } from '@nestjs/swagger';
+import { ResponsePayload } from './payload/common.payload';
 
 @Controller()
 export class AppController {
@@ -8,7 +9,7 @@ export class AppController {
 
 	@Get('/')
 	@ApiOperation({ summary: 'heartbeat 체크' })
-	heartbeat() {
+	heartbeat(): ResponsePayload {
 		return this.appService.heartbeat();
 	}
 }

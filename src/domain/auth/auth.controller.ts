@@ -5,7 +5,7 @@ import { JwtGuard } from '../../guard/jwt.guard';
 import { Auth } from '../../decorator/auth.decorator';
 import { IAuth } from '../../interface/auth.interface';
 import { SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
-import { AuthSigninPayload, AuthGetPayload, AuthSignupEmailDupPayload } from '../../payload/auth.payload';
+import { AuthSigninPayload, AuthGetPayload, AuthSignupEmailDupPayload, AuthSigninFailPayload } from '../../payload/auth.payload';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -25,6 +25,11 @@ export class AuthController {
 
 	@Post('/signin')
 	@ApiOperation({ summary: '로그인' })
+	@ApiResponse({
+		status: 412,
+		description: '이메일 또는 패스워드 틀림',
+		type: AuthSigninFailPayload,
+	})
 	async signIn(@Body() data: SignInDto): Promise<AuthSigninPayload> {
 		return await this.authService.signIn(data);
 	}

@@ -55,3 +55,12 @@ export class AuthSignupEmailDupPayload extends ErrorPayload {
 	@IsEnum(ErrorCodeEnum)
 	code: string;
 }
+
+export class AuthSigninFailPayload extends ErrorPayload {
+	@ApiProperty({ description: '에러 메세지', default: 'Incorrect email or password' })
+	message: string;
+
+	@ApiProperty({ description: '에러 코드', default: '' })
+	@IsEnum(ErrorCodeEnum)
+	code: string;
+}

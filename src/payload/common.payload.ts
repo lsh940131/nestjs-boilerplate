@@ -29,7 +29,7 @@ export class ResponsePayload {
 	@ApiProperty({
 		description: 'any type. 응답 데이터',
 		default: null,
-		required: false,
+		required: true,
 	})
 	data: any;
 
@@ -37,7 +37,7 @@ export class ResponsePayload {
 		description: '응답 성공일 때 null. 에러가 났을 경우 참조. 형태는 ErrorPayload',
 		default: null,
 		nullable: true,
-		required: false,
+		required: true,
 	})
 	@Type(() => ErrorPayload)
 	error: ErrorPayload | null;

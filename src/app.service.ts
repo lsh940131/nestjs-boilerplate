@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ResponsePayload } from './payload/common.payload';
 
 @Injectable()
 export class AppService {
 	constructor() {}
 
-	heartbeat(): boolean {
-		return true;
+	heartbeat(): ResponsePayload {
+		return new ResponsePayload(true, null);
 	}
 }
