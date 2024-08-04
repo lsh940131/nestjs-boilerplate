@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { UtilService } from '../../util/util.service';
 import { IAuth } from '../../interface/auth.interface';
-import { ErrorDto } from '../../dto/common.dto';
 import { CreateJwtDto, SignUpDto, SignInDto } from '../../dto/auth.dto';
+import { CustomHttpException, ErrorPayload } from '../../payload/common.payload';
 
 @Injectable()
 export class AuthService {
@@ -44,7 +44,7 @@ export class AuthService {
 			const decryptInfo = this.utilService.aes256Decrypt(sub);
 			auth = JSON.parse(decryptInfo) as IAuth;
 		} catch (e) {
-			throw new ErrorDto(1, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		// check the token is saved in db
@@ -61,12 +61,12 @@ export class AuthService {
 			},
 		});
 		if (!tokenInfo || tokenInfo.userIdx != auth.idx) {
-			throw new ErrorDto(2, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		const userInfo = await this.prismaService.user.findUnique({ select: { idx: true }, where: { idx: auth.idx, deletedAt: null } });
 		if (!userInfo) {
-			throw new ErrorDto(3, 'Unauthorized');
+			throw new CustomHttpException(401, 'Unauthorized');
 		}
 
 		return auth;
@@ -82,7 +82,7 @@ export class AuthService {
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new ErrorDto(4, 'Already use the email');
+			throw new ErrorPayload('Already use the email');
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -103,12 +103,12 @@ export class AuthService {
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (!userInfo) {
-			throw new ErrorDto(5, 'Incorrect email or pwd');
+			throw new ErrorPayload('Incorrect email or pwd');
 		}
 
 		const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 		if (!isValid) {
-			throw new ErrorDto(6, 'Incorrect email or pwd');
+			throw new ErrorPayload('Incorrect email or pwd');
 		}
 
 		// jwt 생성
