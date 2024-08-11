@@ -13,20 +13,33 @@ export class LoggerInterceptor implements NestInterceptor {
 		const response = httpCtx.getResponse();
 
 		return next.handle().pipe(
-			tap(async (responseData) => {
+			tap(async (responsePayload) => {
 				try {
-					const userIdx = request.user ? request.user.userIdx : null;
 					const { url, method, headers, body, query } = request;
-					let ip = headers['x-forwarded-for'] || request.ip || '';
+					const { statusCode } = response;
+					const userIdx = request.user ? request.user.userIdx : null;
+					const token = headers['authorization'];
 
+					let ip = headers['x-forwarded-for'] || request.ip || '';
 					// IPv4-매핑된 IPv6 주소 형식에서 IPv4 주소만 추출
 					if (ip && ip.startsWith('::ffff:')) {
 						ip = ip.replace('::ffff:', '');
 					}
 
-					const { statusCode } = response;
-
-					await this.loggerService.create(userIdx, ip, url, method, headers, body, query, responseData, null, statusCode);
+					const loggerParam = {
+						ip,
+						method,
+						url,
+						headers,
+						body,
+						query,
+						responsePayload,
+						error: null,
+						statusCode,
+						userIdx,
+						token,
+					};
+					await this.loggerService.create(loggerParam);
 				} catch (err) {
 					// TODO: exception 발생은 시키지 않되, slack으로 개발자에게 알림 주기
 				}

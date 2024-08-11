@@ -33,18 +33,19 @@ model UserToken {
 }
 
 model ApiLog {
-  idx          Int      @id @default(autoincrement())
-  userIdx      Int?     @map("user_idx")
-  ip           String   @db.VarChar(50)
-  url          String   @db.VarChar(150)
-  method       String   @db.VarChar(6)
-  headers      String   @db.Text
-  bodys        String?  @db.Text
-  query        String?  @db.Text
-  responseData String?  @map("response_data") @db.Text
-  error        String?  @db.Text
-  status       Int
-  createdAt    DateTime @default(now()) @map("created_at") @db.DateTime(0)
+  idx             Int      @id @default(autoincrement())
+  ip              String   @db.VarChar(50)
+  method          String?  @db.VarChar(6)
+  url             String   @db.VarChar(150)
+  headers         String   @db.Text
+  body            String?  @db.Text
+  query           String?  @db.Text
+  statusCode      Int?     @map("status_code")
+  responsePayload String?  @map("response_payload") @db.Text
+  error           String?  @db.Text
+  userIdx         Int?     @map("user_idx")
+  token           String?  @db.VarChar(255)
+  createdAt       DateTime @default(now()) @map("created_at") @db.DateTime(0)
 
   @@map("api_log")
 }
