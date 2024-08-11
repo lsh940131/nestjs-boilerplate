@@ -5,7 +5,7 @@ import { LoggerService } from '../logger/logger.service';
 
 @Injectable()
 export class LoggerInterceptor implements NestInterceptor {
-	constructor(private readonly logger: LoggerService) {}
+	constructor(private readonly loggerService: LoggerService) {}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 		const httpCtx = context.switchToHttp();
@@ -26,9 +26,9 @@ export class LoggerInterceptor implements NestInterceptor {
 
 					const { statusCode } = response;
 
-					await this.logger.create(userIdx, ip, url, method, headers, body, query, responseData, null, statusCode);
+					await this.loggerService.create(userIdx, ip, url, method, headers, body, query, responseData, null, statusCode);
 				} catch (err) {
-					throw err;
+					// TODO: exception 발생은 시키지 않되, slack으로 개발자에게 알림 주기
 				}
 			}),
 		);

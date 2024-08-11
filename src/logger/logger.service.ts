@@ -32,8 +32,6 @@ export class LoggerService {
 					status,
 				},
 			});
-		} catch (err) {
-			throw err;
-		}
+		} catch (err) {}
 	}
 }
