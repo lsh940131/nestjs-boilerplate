@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UtilService } from '../../util/util.service';
-import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
-import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
-import { CustomHttpException } from '../../payload/common.payload';
-import { AuthGetPayload, AuthSigninPayload } from 'src/payload/auth.payload';
-import { ErrorCodeEnum } from '../../enum/common.enum';
+import { CryptoService } from '../../util/crypto.service';
+import { IAuth, IAuthUpdate } from './auth.interface';
+import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from './auth.dto';
+import { AuthGetPayload, AuthSigninPayload } from './auth.payload';
+import { ErrorCodeEnum } from '../../common/enum/errorCode.enum';
+import { ErrorPayload } from '../../common/payload/error.payload';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private prismaService: PrismaService,
 		private jwtService: JwtService,
-		private utilService: UtilService,
+		private utilService: CryptoService,
 	) {}
 
 	/**
@@ -46,7 +46,7 @@ export class AuthService {
 			const decryptInfo = this.utilService.aes256Decrypt(sub);
 			auth = JSON.parse(decryptInfo) as IAuth;
 		} catch (e) {
-			throw new CustomHttpException(401, 'Unauthorized');
+			throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
 		}
 
 		// check the token is saved in db
@@ -63,12 +63,12 @@ export class AuthService {
 			},
 		});
 		if (!tokenInfo || tokenInfo.userIdx != auth.idx) {
-			throw new CustomHttpException(401, 'Unauthorized');
+			throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
 		}
 
 		const userInfo = await this.prismaService.user.findUnique({ select: { idx: true }, where: { idx: auth.idx, deletedAt: null } });
 		if (!userInfo) {
-			throw new CustomHttpException(401, 'Unauthorized');
+			throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
 		}
 
 		return auth;
@@ -84,7 +84,7 @@ export class AuthService {
 
 		const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (isDupEmail) {
-			throw new CustomHttpException(409, 'Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
+			throw new ErrorPayload({ statusCode: 409, message: 'Already use the email', code: ErrorCodeEnum.SIGNUP_DUP_EMAIL });
 		}
 
 		const hashPwd = this.utilService.createHash(pwd);
@@ -105,12 +105,12 @@ export class AuthService {
 
 		const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 		if (!userInfo) {
-			throw new CustomHttpException(401, 'Incorrect email or password');
+			throw new ErrorPayload({ statusCode: 401, message: 'Incorrect email or password' });
 		}
 
 		const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 		if (!isValid) {
-			throw new CustomHttpException(401, 'Incorrect email or password');
+			throw new ErrorPayload({ statusCode: 401, message: 'Incorrect email or password' });
 		}
 
 		// jwt 생성

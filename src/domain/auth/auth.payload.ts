@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { ErrorPayload } from '../payload/common.payload';
-import { ErrorCodeEnum } from '../enum/common.enum';
+import { ErrorPayload } from '../../common/payload/error.payload';
+import { ErrorCodeEnum } from '../../common/enum/errorCode.enum';
 
 class AuthSign {
 	token: string;

@@ -1,39 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { ILogger } from './logger.interface';
 
 @Injectable()
 export class LoggerService {
 	constructor(private prismaService: PrismaService) {}
 
-	async create(
-		userIdx: number,
-		ip: string,
-		url: string,
-		method: string,
-		headers: any,
-		bodys: any | null,
-		query: any | null,
-		responseData: any | null,
-		error: any | null,
-		status: number,
-	) {
+	async create(data: ILogger) {
 		try {
-			await this.prismaService.apiLog.create({
-				data: {
-					userIdx,
-					ip,
-					url,
-					method,
-					headers: JSON.stringify(headers),
-					bodys: JSON.stringify(bodys),
-					query: JSON.stringify(query),
-					responseData: JSON.stringify(responseData),
-					error: JSON.stringify(error),
-					status,
-				},
-			});
-		} catch (err) {
-			throw err;
-		}
+			const param = {
+				ip: data.ip,
+				method: data.method,
+				url: data.url,
+				headers: JSON.stringify(data.headers),
+				body: JSON.stringify(data.body),
+				query: JSON.stringify(data.query),
+				statusCode: data.statusCode,
+				responsePayload: JSON.stringify(data.responsePayload),
+				error: JSON.stringify(data.error),
+				userIdx: data.userIdx,
+				token: data.token,
+			};
+			await this.prismaService.apiLog.create({ data: param });
+		} catch (err) {}
 	}
 }

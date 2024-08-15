@@ -4,8 +4,7 @@ import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './domain/auth/auth.module';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { AllExceptionFilter } from './filter/exception.filter';
-import { ResponseInterceptor } from './interceptor/response.interceptor';
+import { AllExceptionFilter } from './common/filter/exception.filter';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerService } from './logger/logger.service';
 import { LoggerInterceptor } from './logger/logger.interceptor';
@@ -19,10 +18,6 @@ import { LoggerInterceptor } from './logger/logger.interceptor';
 		{
 			provide: APP_FILTER,
 			useClass: AllExceptionFilter,
-		},
-		{
-			provide: APP_INTERCEPTOR,
-			useClass: ResponseInterceptor,
 		},
 		{
 			provide: APP_INTERCEPTOR,

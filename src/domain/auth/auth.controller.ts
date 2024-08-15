@@ -1,11 +1,11 @@
 import { Controller, UseGuards, Post, Get, Put, Delete, Query, Body } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { JwtGuard } from '../../guard/jwt.guard';
-import { Auth } from '../../decorator/auth.decorator';
-import { IAuth } from '../../interface/auth.interface';
-import { SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
-import { AuthSigninPayload, AuthGetPayload, AuthSignupEmailDupPayload, AuthSigninFailPayload } from '../../payload/auth.payload';
+import { JwtGuard } from '../../common/guard/jwt.guard';
+import { Auth } from './auth.decorator';
+import { IAuth } from './auth.interface';
+import { SignUpDto, SignInDto, AuthUpdateDto } from './auth.dto';
+import { AuthSigninPayload, AuthGetPayload, AuthSignupEmailDupPayload, AuthSigninFailPayload } from './auth.payload';
 
 @Controller('auth')
 @ApiTags('auth')
