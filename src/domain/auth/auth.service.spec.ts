@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuthService } from './auth.service';
-import { UtilService } from '../../util/util.service';
-import { CreateJwtDto } from '../../dto/auth.dto';
-import { IAuth } from '../../interface/auth.interface';
+import { CryptoService } from '../../util/crypto.service';
+import { CreateJwtDto } from './auth.dto';
+import { IAuth } from './auth.interface';
 
 // Mock PrismaServiceencrypted
 const prismaDefaultFunc = {
@@ -30,7 +30,7 @@ const mockJwtService = {
 	signAsync: jest.fn(() => 'JWT_ENCRYPTED_STRING'),
 };
 
-// Mock UtilService
+// Mock CryptoService
 const mockUtilService = {
 	aes256Encrypt: jest.fn(() => 'AES256_ENCRYPTED_STRING'),
 	aes256Decrypt: jest.fn(),
@@ -41,14 +41,14 @@ const mockUtilService = {
 describe('AuthService', () => {
 	let prismaService: PrismaService;
 	let authService: AuthService;
-	let utilService: UtilService;
+	let utilService: CryptoService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				{ provide: PrismaService, useValue: mockPrismaService },
 				{ provide: JwtService, useValue: mockJwtService },
-				{ provide: UtilService, useValue: mockUtilService },
+				{ provide: CryptoService, useValue: mockUtilService },
 				AuthService,
 				ConfigService,
 			],
@@ -56,7 +56,7 @@ describe('AuthService', () => {
 
 		prismaService = module.get<PrismaService>(PrismaService);
 		authService = module.get<AuthService>(AuthService);
-		utilService = module.get<UtilService>(UtilService);
+		utilService = module.get<CryptoService>(CryptoService);
 	});
 
 	describe('createJwt()', () => {

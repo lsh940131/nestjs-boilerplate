@@ -1,7 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, BadRequestException, HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { ErrorPayload } from '../payload/common.payload';
-import { LoggerService } from '../logger/logger.service';
+import { ErrorPayload } from '../../common/payload/error.payload';
+import { LoggerService } from '../../logger/logger.service';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {

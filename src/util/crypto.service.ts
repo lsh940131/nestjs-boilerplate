@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 
 @Injectable()
-export class UtilService {
+export class CryptoService {
 	private key: string;
 	private iv: Buffer;
 	private saltJar: string;

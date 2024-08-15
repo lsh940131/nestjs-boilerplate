@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UtilService } from '../../util/util.service';
-import { IAuth, IAuthUpdate } from '../../interface/auth.interface';
-import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from '../../dto/auth.dto';
-import { AuthGetPayload, AuthSigninPayload } from 'src/payload/auth.payload';
-import { ErrorCodeEnum } from '../../enum/common.enum';
-import { ErrorPayload } from '../../payload/common.payload';
+import { CryptoService } from '../../util/crypto.service';
+import { IAuth, IAuthUpdate } from './auth.interface';
+import { CreateJwtDto, SignUpDto, SignInDto, AuthUpdateDto } from './auth.dto';
+import { AuthGetPayload, AuthSigninPayload } from './auth.payload';
+import { ErrorCodeEnum } from '../../common/enum/errorCode.enum';
+import { ErrorPayload } from '../../common/payload/error.payload';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private prismaService: PrismaService,
 		private jwtService: JwtService,
-		private utilService: UtilService,
+		private utilService: CryptoService,
 	) {}
 
 	/**

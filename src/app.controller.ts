@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ErrorPayload } from './payload/common.payload';
+import { ErrorPayload } from './common/payload/error.payload';
 
 @Controller()
 export class AppController {

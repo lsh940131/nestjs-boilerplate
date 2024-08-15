@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ErrorCodeEnum } from '../enum/common.enum';
+import { ErrorCodeEnum } from '../enum/errorCode.enum';
 import { IsEnum } from 'class-validator';
-import { Type } from 'class-transformer';
-import { IError } from '../interface/common.interface';
+import { IError } from '../interface/error.interface';
 
 export class ErrorPayload {
 	constructor(data: IError) {

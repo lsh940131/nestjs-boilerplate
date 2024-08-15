@@ -4,12 +4,12 @@ import { AuthService } from './auth.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UtilService } from '../../util/util.service';
-import { JwtStrategy } from '../../strategy/jwt.strategy';
+import { CryptoService } from '../../util/crypto.service';
+import { JwtStrategy } from '../../common/strategy/jwt.strategy';
 
 @Module({
 	controllers: [AuthController],
-	providers: [AuthService, UtilService, JwtStrategy],
+	providers: [AuthService, CryptoService, JwtStrategy],
 	imports: [
 		PrismaModule,
 		ConfigModule,
