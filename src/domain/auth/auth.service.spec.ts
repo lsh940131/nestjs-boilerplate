@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuthService } from './auth.service';
-import { CryptoService } from '../../util/crypto/crypto.service';
+import { CryptoService } from '../../crypto/crypto.service';
 import { CreateJwtDto } from './auth.dto';
 import { IAuth } from './auth.interface';
 

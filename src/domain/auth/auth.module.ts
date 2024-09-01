@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CryptoService } from '../../util/crypto/crypto.service';
+import { CryptoService } from '../../crypto/crypto.service';
 import { JwtStrategy } from '../../common/strategy/jwt.strategy';
 
 @Module({
