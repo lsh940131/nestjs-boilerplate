@@ -12,9 +12,10 @@ export class AllExceptionFilter implements ExceptionFilter {
 		const request = ctx.getRequest();
 		const response = ctx.getResponse<Response>();
 
-		let statusCode: number;
+		let statusCode: number = 500;
 		let res: ErrorPayload;
 		if (exception instanceof ErrorPayload) {
+			statusCode = exception.statusCode;
 			res = exception;
 		} else if (exception instanceof BadRequestException) {
 			statusCode = 400;
@@ -31,7 +32,10 @@ export class AllExceptionFilter implements ExceptionFilter {
 
 		// exception 발생 시 loggerService.create
 
-		response.status(statusCode).json(res);
+		response.status(statusCode).json({
+			message: res.message,
+			code: res.code,
+		});
 	}
 
 	private extractValidationErrorMsg(response: any): string {
