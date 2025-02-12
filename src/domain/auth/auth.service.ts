@@ -51,7 +51,7 @@ export class AuthService {
 				const decryptInfo = this.utilService.aes256Decrypt(sub);
 				auth = JSON.parse(decryptInfo) as IAuth;
 			} catch (e) {
-				throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
+				throw new ErrorPayload('Unauthorized');
 			}
 
 			// check the token is saved in db
@@ -68,12 +68,12 @@ export class AuthService {
 				},
 			});
 			if (!tokenInfo || tokenInfo.userIdx != auth.idx) {
-				throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
+				throw new ErrorPayload('Unauthorized');
 			}
 
 			const userInfo = await this.prismaService.user.findUnique({ select: { idx: true }, where: { idx: auth.idx, deletedAt: null } });
 			if (!userInfo) {
-				throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
+				throw new ErrorPayload('Unauthorized');
 			}
 
 			return auth;
@@ -93,7 +93,7 @@ export class AuthService {
 
 			const [isDupEmail] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 			if (isDupEmail) {
-				throw new ErrorPayload({ statusCode: 409, message: 'Already use the email', code: ErrorCodeEnum.SIGNUP_DUP_EMAIL });
+				throw new ErrorPayload('Already use the email', ErrorCodeEnum.SIGNUP_DUP_EMAIL);
 			}
 
 			const hashPwd = this.utilService.createHash(pwd);
@@ -118,12 +118,12 @@ export class AuthService {
 
 			const [userInfo] = await this.prismaService.user.findMany({ where: { email, deletedAt: null } });
 			if (!userInfo) {
-				throw new ErrorPayload({ statusCode: 401, message: 'Incorrect email or password' });
+				throw new ErrorPayload('Incorrect email or password');
 			}
 
 			const isValid = this.utilService.validateHash(userInfo.pwd, pwd);
 			if (!isValid) {
-				throw new ErrorPayload({ statusCode: 401, message: 'Incorrect email or password' });
+				throw new ErrorPayload('Incorrect email or password');
 			}
 
 			// jwt 생성

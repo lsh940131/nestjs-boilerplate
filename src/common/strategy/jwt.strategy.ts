@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		const jwt = req.headers['authorization'];
 		const auth: IAuth = await this.authService.validateJwt(payload.sub, jwt);
 		if (!auth) {
-			throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
+			throw new ErrorPayload('Unauthorized');
 		}
 
 		return auth;
