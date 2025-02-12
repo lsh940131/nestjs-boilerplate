@@ -87,7 +87,7 @@ export class AuthService {
 	 * - 이메일 중복 체크
 	 * - 비밀번호 단방향 암호화
 	 */
-	async signUp(data: SignUpDto): Promise<boolean> {
+	async signup(data: SignUpDto): Promise<boolean> {
 		try {
 			const { email, pwd, name } = data;
 
@@ -112,7 +112,7 @@ export class AuthService {
 	 * - 이메일 & 패스워드 확인
 	 * - jwt 생성 & 저장
 	 */
-	async signIn(data: SignInDto): Promise<AuthSigninPayload> {
+	async signin(data: SignInDto): Promise<AuthSigninPayload> {
 		try {
 			const { email, pwd } = data;
 
@@ -147,7 +147,7 @@ export class AuthService {
 	 * 로그아웃
 	 * - 사용자id와 jwt 값으로 jwt 삭제처리
 	 */
-	async signOut(auth: IAuth): Promise<boolean> {
+	async signout(auth: IAuth): Promise<boolean> {
 		try {
 			await this.prismaService.userToken.updateMany({ where: { userIdx: auth.idx, value: auth.jwt }, data: { deletedAt: new Date() } });
 

@@ -14,22 +14,22 @@ export class AuthController {
 
 	@Post('/signup')
 	@ApiOperation({ summary: '회원가입' })
-	async signUp(@Body() data: SignUpDto): Promise<boolean> {
-		return await this.authService.signUp(data);
+	async signup(@Body() data: SignUpDto): Promise<boolean> {
+		return await this.authService.signup(data);
 	}
 
 	@Post('/signin')
 	@ApiOperation({ summary: '로그인' })
-	async signIn(@Body() data: SignInDto): Promise<AuthSigninPayload> {
-		return await this.authService.signIn(data);
+	async signin(@Body() data: SignInDto): Promise<AuthSigninPayload> {
+		return await this.authService.signin(data);
 	}
 
 	@ApiBearerAuth('access-token')
 	@UseGuards(JwtGuard)
 	@Post('/signout')
 	@ApiOperation({ summary: '로그아웃' })
-	async signOut(@Auth() auth: IAuth): Promise<boolean> {
-		return await this.authService.signOut(auth);
+	async signout(@Auth() auth: IAuth): Promise<boolean> {
+		return await this.authService.signout(auth);
 	}
 
 	@ApiBearerAuth('access-token')
