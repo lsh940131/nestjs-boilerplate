@@ -1,30 +1,20 @@
 <details><summary>API Response form</summary><p>
 
 ```
-Success = http status code 200 번대
+Success case
 {
 	data: {}, // any type
     error: null
 }
 
-Error = http status code 200 이외
+Error case
 {
     data: null
     error: {
-        message: "",
-        code: "" // ErrorCode 참고. null 또는 "" 일 수 있음
+        message: "에러 메세지",
+        code: "" // null 또는 ErrorCode 값
     }
 }
 ```
 
- </p></details>
-
-<details><summary>ErrorCodeEnum</summary><p>
-
-```
-{
-	SIGNUP_DUP_EMAIL = 'AUTH001',
-}
-```
-
- </p></details>
+</p></details>
