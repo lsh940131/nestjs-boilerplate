@@ -8,6 +8,7 @@ import { AllExceptionFilter } from './common/filter/exception.filter';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerService } from './logger/logger.service';
 import { LoggerInterceptor } from './logger/logger.interceptor';
+import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 
 @Module({
 	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule],
@@ -22,6 +23,10 @@ import { LoggerInterceptor } from './logger/logger.interceptor';
 		{
 			provide: APP_INTERCEPTOR,
 			useClass: LoggerInterceptor,
+		},
+		{
+			provide: APP_INTERCEPTOR,
+			useClass: ResponseInterceptor,
 		},
 	],
 })
