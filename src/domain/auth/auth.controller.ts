@@ -5,7 +5,7 @@ import { JwtGuard } from '../../common/guard/jwt.guard';
 import { Auth } from './auth.decorator';
 import { IAuth } from './auth.interface';
 import { SignUpDto, SignInDto, AuthUpdateDto } from './auth.dto';
-import { AuthSigninPayload, AuthGetPayload, AuthSignupEmailDupPayload, AuthSigninFailPayload } from './auth.payload';
+import { AuthSigninPayload, AuthGetPayload } from './auth.payload';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -14,22 +14,12 @@ export class AuthController {
 
 	@Post('/signup')
 	@ApiOperation({ summary: '회원가입' })
-	@ApiResponse({
-		status: 409,
-		description: '이메일 중복',
-		type: AuthSignupEmailDupPayload,
-	})
 	async signUp(@Body() data: SignUpDto): Promise<boolean> {
 		return await this.authService.signUp(data);
 	}
 
 	@Post('/signin')
 	@ApiOperation({ summary: '로그인' })
-	@ApiResponse({
-		status: 401,
-		description: '이메일 또는 패스워드 틀림',
-		type: AuthSigninFailPayload,
-	})
 	async signIn(@Body() data: SignInDto): Promise<AuthSigninPayload> {
 		return await this.authService.signIn(data);
 	}

@@ -1,7 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
-import { ErrorPayload } from '../../common/payload/error.payload';
-import { ErrorCodeEnum } from '../../common/enum/errorCode.enum';
 
 class AuthSign {
 	token: string;
@@ -35,32 +32,14 @@ export class AuthGetPayload {
 	}
 
 	@ApiProperty({ default: 'tester@test.com' })
-	email: string;
+	readonly email: string;
 
 	@ApiProperty({ default: 'tester' })
-	name: string;
+	readonly name: string;
 
 	@ApiProperty({ default: new Date() })
-	createdAt: Date;
+	readonly createdAt: Date;
 
 	@ApiProperty({ default: new Date() })
-	pwdUpdatedAt: Date;
-}
-
-export class AuthSignupEmailDupPayload extends ErrorPayload {
-	@ApiProperty({ description: '에러 메세지', default: 'Already use the email' })
-	message: string;
-
-	@ApiProperty({ description: '에러 코드', default: ErrorCodeEnum.SIGNUP_DUP_EMAIL })
-	@IsEnum(ErrorCodeEnum)
-	code: string;
-}
-
-export class AuthSigninFailPayload extends ErrorPayload {
-	@ApiProperty({ description: '에러 메세지', default: 'Incorrect email or password' })
-	message: string;
-
-	@ApiProperty({ description: '에러 코드', default: '' })
-	@IsEnum(ErrorCodeEnum)
-	code: string;
+	readonly pwdUpdatedAt: Date;
 }
