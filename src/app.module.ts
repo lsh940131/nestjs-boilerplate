@@ -9,9 +9,10 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerService } from './logger/logger.service';
 import { LoggerInterceptor } from './logger/logger.interceptor';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
+import { UserModule } from './domain/user/user.module';
 
 @Module({
-	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule],
+	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule, UserModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
