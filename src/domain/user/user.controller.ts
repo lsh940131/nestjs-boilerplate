@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { DUserSignin, DUserSignup, DUserUpdate } from './user.dto';
 import { PUserGet, PUserSignin } from './user.payload';
 import { Auth } from '../auth/auth.decorator';
-import { IAuth } from '../auth/auth.interface';
+import { DAuth } from '../auth/auth.dto';
 import { JwtGuard } from 'src/common/guard/jwt.guard';
 
 @Controller('user')
@@ -22,7 +22,7 @@ export class UserController {
 	@UseGuards(JwtGuard)
 	@Delete('/signout')
 	@ApiOperation({ summary: '회원탈퇴' })
-	async signout(@Auth() auth: IAuth): Promise<boolean> {
+	async signout(@Auth() auth: DAuth): Promise<boolean> {
 		return await this.userService.signout(auth.idx);
 	}
 
@@ -36,7 +36,7 @@ export class UserController {
 	@UseGuards(JwtGuard)
 	@Post('/logout')
 	@ApiOperation({ summary: '로그아웃' })
-	async logout(@Auth() auth: IAuth): Promise<boolean> {
+	async logout(@Auth() auth: DAuth): Promise<boolean> {
 		return await this.userService.logout(auth.idx, auth.jwt);
 	}
 
@@ -44,7 +44,7 @@ export class UserController {
 	@UseGuards(JwtGuard)
 	@Get('/')
 	@ApiOperation({ summary: '사용자 정보 조회' })
-	async get(@Auth() auth: IAuth): Promise<PUserGet> {
+	async get(@Auth() auth: DAuth): Promise<PUserGet> {
 		return await this.userService.get(auth.idx);
 	}
 
@@ -52,7 +52,7 @@ export class UserController {
 	@UseGuards(JwtGuard)
 	@Put('/')
 	@ApiOperation({ summary: '사용자 정보 수정' })
-	async update(@Auth() auth: IAuth, @Body() data: DUserUpdate): Promise<boolean> {
+	async update(@Auth() auth: DAuth, @Body() data: DUserUpdate): Promise<boolean> {
 		return await this.userService.update(auth.idx, data);
 	}
 }

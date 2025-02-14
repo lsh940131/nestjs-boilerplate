@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { CryptoService } from '../../crypto/crypto.service';
-import { CreateJwtDto } from './auth.dto';
-import { IAuth } from './auth.interface';
+import { DAuthCreateJwt } from './auth.dto';
+import { DAuth } from './auth.dto';
 
 // Mock PrismaServiceencrypted
 const prismaDefaultFunc = {
@@ -61,7 +61,7 @@ describe('AuthService', () => {
 
 	describe('createJwt()', () => {
 		it('success', async () => {
-			const input: CreateJwtDto = {
+			const input: DAuthCreateJwt = {
 				idx: 1,
 			};
 			const expectedResult = 'JWT_ENCRYPTED_STRING';
@@ -77,7 +77,7 @@ describe('AuthService', () => {
 				sub: 'AES256_ENCRYPTED_STRING',
 				jwt: 'JWT_ENCRYPTED_STRING',
 			};
-			const auth: IAuth = {
+			const auth: DAuth = {
 				idx: 1,
 				jwt: 'JWT_ENCRYPTED_STRING',
 			};
@@ -156,7 +156,7 @@ describe('AuthService', () => {
 				sub: 'AES256_ENCRYPTED_STRING',
 				jwt: 'JWT_ENCRYPTED_STRING',
 			};
-			const auth: IAuth = {
+			const auth: DAuth = {
 				idx: 1,
 				jwt: 'JWT_ENCRYPTED_STRING',
 			};

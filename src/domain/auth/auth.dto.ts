@@ -1,50 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEmail, IsString, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class CreateJwtDto {
+export class DAuthCreateJwt {
 	@ApiProperty({ required: true, default: 1 })
-	idx: number;
+	@IsNotEmpty()
+	@IsNumber()
+	readonly idx: number;
 }
 
-export class SignUpDto {
-	@ApiProperty({ required: true, default: 'test@test.com', minLength: 1, maxLength: 100 })
-	@IsNotEmpty()
-	@IsString()
-	@IsEmail()
-	email: string;
+export class DAuth {
+	constructor(idx: number, jwt: string) {
+		(this.idx = idx), (this.jwt = jwt);
+	}
 
-	@ApiProperty({ required: true, default: 'pwd', minLength: 1, maxLength: 100 })
-	@IsNotEmpty()
-	@IsString()
-	pwd: string;
-
-	@ApiProperty({ required: true, default: 'tester', minLength: 1, maxLength: 100 })
-	@IsNotEmpty()
-	@IsString()
-	name: string;
-}
-
-export class SignInDto {
-	@ApiProperty({ required: true, default: 'test@test.com', minLength: 1, maxLength: 100 })
-	@IsNotEmpty()
-	@IsString()
-	@IsEmail()
-	email: string;
-
-	@ApiProperty({ required: true, default: 'pwd', minLength: 1, maxLength: 100 })
-	@IsNotEmpty()
-	@IsString()
-	pwd: string;
-}
-
-export class AuthUpdateDto {
-	@ApiProperty({ required: false, maxLength: 100 })
-	@IsString()
-	@IsOptional()
-	readonly pwd?: string;
-
-	@ApiProperty({ required: false, maxLength: 100 })
-	@IsString()
-	@IsOptional()
-	readonly name?: string;
+	readonly idx: number;
+	readonly jwt: string;
 }
