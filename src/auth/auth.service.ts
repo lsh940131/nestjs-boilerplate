@@ -11,7 +11,7 @@ export class AuthService {
 	constructor(
 		private prismaService: PrismaService,
 		private jwtService: JwtService,
-		private utilService: CryptoService,
+		private cryptoService: CryptoService,
 	) {}
 
 	/**
@@ -21,7 +21,7 @@ export class AuthService {
 	 */
 	async createJwt(data: DAuthCreateJwt): Promise<string> {
 		try {
-			const encrypted = this.utilService.aes256Encrypt(
+			const encrypted = this.cryptoService.aes256Encrypt(
 				JSON.stringify({
 					...data,
 				}),
@@ -46,7 +46,7 @@ export class AuthService {
 			let auth: IAuth;
 			// aes decrypt
 			try {
-				const decryptInfo = this.utilService.aes256Decrypt(sub);
+				const decryptInfo = this.cryptoService.aes256Decrypt(sub);
 				auth = JSON.parse(decryptInfo) as IAuth;
 			} catch (e) {
 				throw new ErrorPayload('Unauthorized');
