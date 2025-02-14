@@ -11,6 +11,6 @@ export interface IUserGet {
 }
 
 export interface IUserUpdate {
-	readonly pwd?: string;
-	readonly name?: string;
+	pwd?: string;
+	name?: string;
 }
