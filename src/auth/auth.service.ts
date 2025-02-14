@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../prisma/prisma.service';
-import { CryptoService } from '../../crypto/crypto.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { CryptoService } from '../crypto/crypto.service';
 import { IAuth } from './auth.interface';
 import { DAuth, DAuthCreateJwt } from './auth.dto';
-import { ErrorPayload } from '../../common/payload/error.payload';
+import { ErrorPayload } from '../common/payload/error.payload';
 
 @Injectable()
 export class AuthService {

@@ -5,7 +5,7 @@ import { DUserSignin, DUserSignup, DUserUpdate } from './user.dto';
 import { PUserSignin, PUserGet } from './user.payload';
 import { ErrorPayload } from 'src/common/payload/error.payload';
 import { CryptoService } from 'src/crypto/crypto.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 import { ErrorCodeEnum } from 'src/common/enum/errorCode.enum';
 
 @Injectable()

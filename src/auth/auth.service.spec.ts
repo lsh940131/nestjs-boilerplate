@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
-import { CryptoService } from '../../crypto/crypto.service';
+import { CryptoService } from '../crypto/crypto.service';
 import { DAuthCreateJwt } from './auth.dto';
 import { DAuth } from './auth.dto';
 

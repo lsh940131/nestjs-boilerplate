@@ -3,8 +3,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { DUserSignin, DUserSignup, DUserUpdate } from './user.dto';
 import { PUserGet, PUserSignin } from './user.payload';
-import { Auth } from '../auth/auth.decorator';
-import { DAuth } from '../auth/auth.dto';
+import { Auth } from '../../auth/auth.decorator';
+import { DAuth } from '../../auth/auth.dto';
 import { JwtGuard } from 'src/common/guard/jwt.guard';
 
 @Controller('user')
