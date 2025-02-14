@@ -5,7 +5,7 @@ import { DUserSignin, DUserSignup, DUserUpdate } from './user.dto';
 import { PUserGet, PUserSignin } from './user.payload';
 import { Auth } from '../../auth/auth.decorator';
 import { DAuth } from '../../auth/auth.dto';
-import { JwtGuard } from 'src/common/guard/jwt.guard';
+import { JwtGuard } from '../../auth/jwt/jwt.guard';
 
 @Controller('user')
 @ApiTags('user')

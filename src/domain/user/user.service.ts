@@ -3,10 +3,10 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { IUserUpdate } from './user.interface';
 import { DUserSignin, DUserSignup, DUserUpdate } from './user.dto';
 import { PUserSignin, PUserGet } from './user.payload';
-import { ErrorPayload } from 'src/common/payload/error.payload';
-import { CryptoService } from 'src/crypto/crypto.service';
+import { ErrorPayload } from '../../common/payload/error.payload';
+import { CryptoService } from '../../crypto/crypto.service';
 import { AuthService } from '../../auth/auth.service';
-import { ErrorCodeEnum } from 'src/common/enum/errorCode.enum';
+import { ErrorCodeEnum } from '../../common/enum/errorCode.enum';
 
 @Injectable()
 export class UserService {
