@@ -1,13 +1,13 @@
 export interface ILogger {
-	ip: string;
-	method: string;
-	url: string;
-	headers: any;
-	body: any | null;
-	query: any | null;
-	statusCode: number | null;
-	responsePayload: any | null;
-	error: any | null;
-	userIdx: number | null;
-	token: string | null;
+	readonly ip: string;
+	readonly method: string;
+	readonly url: string;
+	readonly headers: any;
+	readonly body: any | null;
+	readonly query: any | null;
+	readonly statusCode: number | null;
+	readonly responsePayload: any | null;
+	readonly error: any | null;
+	readonly userIdx: number | null;
+	readonly token: string | null;
 }
