@@ -10,9 +10,11 @@ import { LoggerService } from './logger/logger.service';
 import { LoggerInterceptor } from './logger/logger.interceptor';
 import { ResponseInterceptor } from './common/interceptor/response.interceptor';
 import { UserModule } from './domain/user/user.module';
+import { CryptoModule } from './crypto/crypto.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
-	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule, UserModule],
+	imports: [ConfigModule.forRoot({ isGlobal: true }), PrismaModule, AuthModule, UserModule, CryptoModule, LoggerModule],
 	controllers: [AppController],
 	providers: [
 		AppService,
