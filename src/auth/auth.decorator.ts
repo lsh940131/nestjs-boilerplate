@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { IAuth } from './auth.interface';
+import { DAuth } from './auth.dto';
 
-export const Auth = createParamDecorator((data: unknown, ctx: ExecutionContext): IAuth => {
+export const Auth = createParamDecorator((data: unknown, ctx: ExecutionContext): DAuth => {
 	const request = ctx.switchToHttp().getRequest();
 
 	return request.user;

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ILogger } from './logger.interface';
+import { DLogger } from './logger.dto';
 
 @Injectable()
 export class LoggerService {
 	constructor(private prismaService: PrismaService) {}
 
-	async create(data: ILogger) {
+	async create(data: DLogger) {
 		try {
 			const param = {
 				ip: data.ip,

@@ -2,6 +2,7 @@ import { ExceptionFilter, Catch, ArgumentsHost, BadRequestException, HttpExcepti
 import { Response } from 'express';
 import { ErrorPayload } from '../../common/payload/error.payload';
 import { LoggerService } from '../../logger/logger.service';
+import { ResponsePayload } from '../../common/payload/response.payload';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {
@@ -12,21 +13,26 @@ export class AllExceptionFilter implements ExceptionFilter {
 		const request = ctx.getRequest();
 		const response = ctx.getResponse<Response>();
 
-		let statusCode: number;
-		let res: ErrorPayload;
-		if (exception instanceof ErrorPayload) {
+		let statusCode: number = 200;
+		let res: ResponsePayload;
+		if (exception instanceof ResponsePayload) {
 			res = exception;
+		} else if (exception instanceof ErrorPayload) {
+			res = new ResponsePayload(null, exception);
 		} else if (exception instanceof BadRequestException) {
 			statusCode = 400;
 			const validationErrorMsg = this.extractValidationErrorMsg(exception.getResponse());
-			res = new ErrorPayload({ message: validationErrorMsg });
+			res = new ResponsePayload(null, new ErrorPayload(validationErrorMsg));
 		} else if (exception instanceof HttpException) {
 			statusCode = exception.getStatus();
-			res = new ErrorPayload({ message: exception.message });
+			res = new ResponsePayload(null, new ErrorPayload(exception.message));
 		} else {
 			console.log(exception);
+
+			// slack
+
 			statusCode = 500;
-			res = new ErrorPayload({ message: 'Internal Server Error' });
+			res = new ResponsePayload(null, new ErrorPayload('Internal Server Error'));
 		}
 
 		// exception 발생 시 loggerService.create

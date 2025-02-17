@@ -14,7 +14,7 @@ export function setupSwagger(app: INestApplication): void {
 	const swaggerPass: string = 'admin';
 
 	app.use([swaggerRouter], expressBasicAuth({ challenge: true, users: { [swaggerId]: swaggerPass } }));
-	const description: string = readFileSync(path.join(__dirname, './', 'description.md'), 'utf-8');
+	const description: string = getDescription();
 	const config = new DocumentBuilder()
 		.setTitle('API Document')
 		.setDescription(description)
@@ -27,4 +27,11 @@ export function setupSwagger(app: INestApplication): void {
 			persistAuthorization: true,
 		},
 	});
+}
+
+function getDescription(): string {
+	const description: string = readFileSync(path.join(__dirname, './', 'description.md'), 'utf-8');
+	const errorCodeEnum: string = readFileSync(path.join(__dirname, '../../src/common/enum/errorCode.enum.ts'), 'utf-8');
+
+	return description + '\n<details><summary>errorCodeEnum</summary><p>\n```\n' + errorCodeEnum + '\n```\n' + '</p></details>';
 }

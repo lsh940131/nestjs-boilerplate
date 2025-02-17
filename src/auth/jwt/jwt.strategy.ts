@@ -2,9 +2,9 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ErrorPayload } from '../payload/error.payload';
-import { AuthService } from '../../domain/auth/auth.service';
-import { IAuth } from '../../domain/auth/auth.interface';
+import { ErrorPayload } from '../../common/payload/error.payload';
+import { AuthService } from '../auth.service';
+import { DAuth } from '../auth.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -20,11 +20,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 		});
 	}
 
-	async validate(req: Request, payload: any): Promise<IAuth> {
+	async validate(req: Request, payload: any): Promise<DAuth> {
 		const jwt = req.headers['authorization'];
-		const auth: IAuth = await this.authService.validateJwt(payload.sub, jwt);
+		const auth: DAuth = await this.authService.validateJwt(payload.sub, jwt);
 		if (!auth) {
-			throw new ErrorPayload({ statusCode: 401, message: 'Unauthorized' });
+			throw new ErrorPayload('Unauthorized');
 		}
 
 		return auth;
